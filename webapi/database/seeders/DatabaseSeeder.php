@@ -15,10 +15,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
 
         $this->call([
-            BoardSeeder::class
-        ]);
+        UserSeeder::class,  
+        BoardSeeder::class,  
+        ListaSeeder::class,  
+        TaskSeeder::class,     
+        TaskFileSeeder::class, 
+    ]);
     }
 }

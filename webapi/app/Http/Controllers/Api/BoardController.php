@@ -20,7 +20,7 @@ class BoardController extends Controller
     }
 
     /**
-     * 1. LEER (Todos)
+     *  LEER (Todos)
      */
     public function index()
     {
@@ -32,7 +32,7 @@ class BoardController extends Controller
     }
 
     /**
-     * 2. CREAR
+     * CREAR
      */
     public function store(Request $request)
     {
@@ -53,7 +53,7 @@ class BoardController extends Controller
     }
 
     /**
-     * 3. LEER
+     * LEER
      */
     public function show($id)
     {
@@ -71,7 +71,7 @@ class BoardController extends Controller
     }
 
     /**
-     * 4. ACTUALIZAR
+     * ACTUALIZAR
      */
     public function update(Request $request, $id)
     {

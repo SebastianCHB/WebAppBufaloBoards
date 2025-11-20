@@ -6,13 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 class Lista extends Model
 {
     use HasFactory;
-    protected $guarded = []; 
+    protected $table = 'listas';
 
-    public function board() {
+    protected $fillable = ['title', 'board_id'];
+
+    public function board()
+    {
         return $this->belongsTo(Board::class);
     }
 
-    public function cards() {
-        return $this->hasMany(Card::class);
+    public function tasks()
+    {
+        return $this->hasMany(Task::class, 'list_id');
     }
 }
