@@ -1,5 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { 
+    FiLogOut, FiUsers, FiGrid, FiSettings, FiSearch, 
+    FiBell, FiMenu, FiEdit2, FiTrash2, FiSave, FiMoreHorizontal 
+} from 'react-icons/fi';
 
 export default function AdminPanel() {
     const navigate = useNavigate();
@@ -17,81 +21,102 @@ export default function AdminPanel() {
     };
 
     return (
-        <div className="dashboard-layout">
+        <div className="app-container">
             
-            <nav className="glass-navbar">
-                <div className="nav-logo">Bufalo Boards</div>
-                <div style={{display: 'flex', alignItems: 'center', gap: '20px'}}>
-                    <span>Bienvenido, <b>Jefe</b></span>
-                    <button onClick={handleLogout} className="logout-btn">
-                        Salir
+            <aside className="sidebar">
+                <div className="sidebar-header">
+                    <div className="logo-text">BufaloAdmin</div>
+                </div>
+
+                <nav className="sidebar-nav">
+                    <a href="#" className="nav-item active">
+                        <FiGrid /> Dashboard
+                    </a>
+                    <a href="#" className="nav-item">
+                        <FiUsers /> Usuarios
+                    </a>
+                    <a href="#" className="nav-item">
+                        <FiSettings /> Configuración
+                    </a>
+                </nav>
+
+                <div className="sidebar-footer">
+                    <button onClick={handleLogout} className="logout-btn-sidebar">
+                        <FiLogOut /> Cerrar Sesión
                     </button>
                 </div>
-            </nav>
+            </aside>
 
-            <main className="dashboard-content">
-                <h1 style={{ marginBottom: '20px', color: 'var(--color-prussian)' }}>
-                    Gestión de Usuarios
-                </h1>
+            <div className="main-wrapper">
+                
+                <header className="topbar">
+                    <div className="topbar-left">
+                        <FiMenu className="menu-icon" />
+                        <div className="search-box">
+                            <FiSearch />
+                            <input type="text" placeholder="Buscar..." />
+                        </div>
+                    </div>
+                    <div className="topbar-right">
+                        <div className="icon-btn"><FiBell /></div>
+                        <div className="user-profile">
+                            <div className="avatar">JS</div>
+                            <div className="user-info">
+                                <span className="name">Jefe Supremo</span>
+                                <span className="role">Admin</span>
+                            </div>
+                        </div>
+                    </div>
+                </header>
 
-                <div className="crud-layout">
-                    
-                    <div className="crud-form-section">
-                        <div style={{ 
-                            background: 'rgba(255,255,255,0.4)', 
-                            padding: '25px', 
-                            borderRadius: '20px',
-                            border: '1px solid white'
-                        }}>
-                            <h3 style={{marginBottom: '15px', color: 'var(--color-lapis)'}}>
-                                ✨ Nuevo Usuario
-                            </h3>
-                            
+                <main className="content-area">
+
+                    <div className="main-grid">
+                        
+                        <div className="panel-card form-panel">
+                            <div className="panel-header">
+                                <h3>Nuevo Usuario</h3>
+                            </div>
                             <form>
-                                <div style={{marginBottom: '15px'}}>
-                                    <label style={{display:'block', marginBottom:'5px', fontSize:'0.9rem', fontWeight:'600'}}>Nombre</label>
-                                    <input type="text" placeholder="Ej. Juan Pérez" className="glass-input" style={{background: 'rgba(255,255,255,0.6)', color: '#333'}} />
+                                <div className="form-group">
+                                    <label>Nombre</label>
+                                    <input type="text" className="input-dark" placeholder="Nombre completo" />
                                 </div>
-
-                                <div style={{marginBottom: '15px'}}>
-                                    <label style={{display:'block', marginBottom:'5px', fontSize:'0.9rem', fontWeight:'600'}}>Email</label>
-                                    <input type="email" placeholder="usuario@email.com" className="glass-input" style={{background: 'rgba(255,255,255,0.6)', color: '#333'}} />
+                                <div className="form-group">
+                                    <label>Email</label>
+                                    <input type="email" className="input-dark" placeholder="correo@ejemplo.com" />
                                 </div>
-
-                                <div style={{marginBottom: '15px'}}>
-                                    <label style={{display:'block', marginBottom:'5px', fontSize:'0.9rem', fontWeight:'600'}}>Rol</label>
-                                    <select className="glass-select" style={{background: 'rgba(255,255,255,0.6)'}}>
-                                        <option value="user">Usuario Normal</option>
-                                        <option value="admin">Administrador</option>
-                                    </select>
+                                <div className="form-row">
+                                    <div className="form-group">
+                                        <label>Rol</label>
+                                        <select className="input-dark">
+                                            <option>User</option>
+                                            <option>Admin</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group">
+                                        <label>Pass</label>
+                                        <input type="password" className="input-dark" placeholder="***" />
+                                    </div>
                                 </div>
-
-                                <div style={{marginBottom: '20px'}}>
-                                    <label style={{display:'block', marginBottom:'5px', fontSize:'0.9rem', fontWeight:'600'}}>Contraseña</label>
-                                    <input type="password" placeholder="******" className="glass-input" style={{background: 'rgba(255,255,255,0.6)', color: '#333'}} />
-                                </div>
-
-                                <button type="button" className="yummy-button" style={{fontSize: '1rem'}}>
-                                    Guardar Usuario
+                                <button type="button" className="btn-primary">
+                                    <FiSave /> Guardar
                                 </button>
                             </form>
                         </div>
-                    </div>
 
-                    <div className="crud-table-section">
-                        <div style={{ 
-                            background: 'rgba(255,255,255,0.2)', 
-                            padding: '20px', 
-                            borderRadius: '20px',
-                            border: '1px solid rgba(255,255,255,0.3)'
-                        }}>
-                            <table className="glass-table">
+                        <div className="panel-card table-panel">
+                            <div className="panel-header">
+                                <h3>Lista de Usuarios</h3>
+                                <FiMoreHorizontal style={{cursor: 'pointer'}}/>
+                            </div>
+                            <table className="custom-table">
                                 <thead>
                                     <tr>
                                         <th>ID</th>
                                         <th>Usuario</th>
                                         <th>Rol</th>
-                                        <th style={{textAlign: 'center'}}>Acciones</th>
+                                        <th style={{textAlign: 'right'}}>Acciones</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -99,24 +124,15 @@ export default function AdminPanel() {
                                         <tr key={u.id}>
                                             <td>#{u.id}</td>
                                             <td>
-                                                <div style={{fontWeight: 'bold'}}>{u.name}</div>
-                                                <div style={{fontSize: '0.85rem', opacity: 0.7}}>{u.email}</div>
+                                                <div className="fw-bold">{u.name}</div>
+                                                <div className="text-muted">{u.email}</div>
                                             </td>
                                             <td>
-                                                <span style={{
-                                                    padding: '4px 10px', 
-                                                    borderRadius: '15px', 
-                                                    background: u.role === 'admin' ? 'var(--color-lapis)' : 'var(--color-light-blue)',
-                                                    color: u.role === 'admin' ? 'white' : 'var(--color-prussian)',
-                                                    fontSize: '0.8rem',
-                                                    fontWeight: 'bold'
-                                                }}>
-                                                    {u.role.toUpperCase()}
-                                                </span>
+                                                <span className={`badge ${u.role}`}>{u.role}</span>
                                             </td>
-                                            <td style={{textAlign: 'center'}}>
-                                                <button className="action-btn btn-edit">✏️</button>
-                                                <button className="action-btn btn-delete">🗑️</button>
+                                            <td style={{textAlign: 'right'}}>
+                                                <button className="action-icon"><FiEdit2 /></button>
+                                                <button className="action-icon delete"><FiTrash2 /></button>
                                             </td>
                                         </tr>
                                     ))}
@@ -125,8 +141,12 @@ export default function AdminPanel() {
                         </div>
                     </div>
 
-                </div>
-            </main>
+                    <footer className="footer">
+                        <p>&copy; 2025 BufaloBoards. Todos los derechos reservados.</p>
+                    </footer>
+
+                </main>
+            </div>
         </div>
     );
 }
