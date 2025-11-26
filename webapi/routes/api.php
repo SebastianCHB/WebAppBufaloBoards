@@ -8,6 +8,7 @@ use App\Http\Controllers\Api\TaskController;
 use App\Http\Controllers\Api\AdminUserController;
 
 Route::post('/login', [AuthController::class, 'login']);
+Route::post('register', [AuthController::class, 'register']);
 
 //protegidas
 Route::group(['middleware' => 'auth:api'], function () {
