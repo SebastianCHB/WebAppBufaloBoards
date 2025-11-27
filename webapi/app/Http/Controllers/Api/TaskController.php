@@ -4,117 +4,47 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Task;
-use App\Models\Lista;
-use App\Models\TaskFile;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        if (!$request->list_id) {
-            return response()->json(['error' => 'list_id is required'], 400);
-        }
-
-        $lista = Lista::find($request->list_id);
-
-        if (!$lista || $lista->board->user_id != Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $tasks = Task::where('list_id', $request->list_id)->with('files')->get();
-        return response()->json($tasks);
+        return response()->json(Task::with(['list', 'user'])->latest()->get());
     }
+
+    public function move(Request $request, $id)
+{
+    $task = Task::findOrFail($id);
+    
+    $task->list_id = $request->list_id;
+    $task->position = $request->position;
+    $task->save();
+    
+    return response()->json($task);
+}
 
     public function store(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'title' => 'required|string|max:255',
-            'list_id' => 'required|exists:lists,id',
-            'file' => 'nullable|file|max:10240'
+        $request->validate([
+            'title' => 'required|string',
+            'list_id' => 'required|exists:listas,id'
         ]);
 
-        if ($validator->fails()) {
-            return response()->json($validator->errors(), 400);
-        }
-
-        $lista = Lista::find($request->list_id);
-        if ($lista->board->user_id != Auth::id()) {
-            return response()->json(['error' => 'Unauthorized'], 403);
-        }
-
-        $task = Task::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'list_id' => $request->list_id,
-            'user_id' => Auth::id()
-        ]);
-
-        if ($request->hasFile('file')) {
-            $file = $request->file('file');
-            $path = $file->store('task_files', 'public');
-
-            TaskFile::create([
-                'task_id' => $task->id,
-                'uploaded_by_user_id' => Auth::id(),
-                'file_path' => $path,
-                'file_name' => $file->getClientOriginalName(),
-                'file_mime_type' => $file->getMimeType()
-            ]);
-        }
-
-        return response()->json($task->load('files'), 201);
-    }
-
-    public function show($id)
-    {
-        $task = Task::with('files')->find($id);
-
-        if (!$task) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
-
-        if ($task->user_id != Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        return response()->json($task);
+        $task = Task::create($request->all());
+        return response()->json($task, 201);
     }
 
     public function update(Request $request, $id)
     {
-        $task = Task::find($id);
-
-        if (!$task) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
-
-        if ($task->user_id != Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
+        $task = Task::findOrFail($id);
         $task->update($request->all());
-
         return response()->json($task);
     }
 
     public function destroy($id)
     {
-        $task = Task::find($id);
-
-        if (!$task) {
-            return response()->json(['message' => 'Not found'], 404);
-        }
-
-        if ($task->user_id != Auth::id()) {
-            return response()->json(['message' => 'Unauthorized'], 403);
-        }
-
-        $task->delete();
-
-        return response()->json(['message' => 'Deleted successfully']);
+        Task::destroy($id);
+        return response()->json(null, 204);
     }
 }

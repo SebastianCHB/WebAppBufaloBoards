@@ -1,92 +1,88 @@
-
 import { useState } from 'react';
 import client from '../api/axios';
-import { useNavigate } from 'react-router-dom';
-import { Link } from 'react-router-dom';    
+// import { useNavigate } from 'react-router-dom'; // YA NO LO NECESITAMOS AQUÍ
+import { Link } from 'react-router-dom';
 
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
-    const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    // const navigate = useNavigate(); // BORRAR ESTO
 
-const handleSubmit = async (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError(null);
+        setLoading(true);
 
         try {
-            const response = await client.post('/login', {
-                email: email,
-                password: password
-            });
-            console.log("Datos recibidos:", response.data);
+            // Limpieza preventiva
+            localStorage.clear();
 
-            const token = response.data.access_token;
-            const user = response.data.user;
+            const response = await client.post('/login', { email, password });
+            console.log(response.data); // Para ver si llega el token
+            
+            const { access_token, user } = response.data;
 
-            if (token && user) {
-                localStorage.setItem('authToken', token);
+            if (access_token && user) {
+                // 1. Guardar datos
+                localStorage.setItem('authToken', access_token);
                 localStorage.setItem('user', JSON.stringify(user));
 
+                // 2. LA SOLUCIÓN NUCLEAR: Forzar recarga del navegador
+                // Esto obliga al ProtectedRoute a leer el token fresco sí o sí.
                 if (user.role === 'admin') {
-                    navigate('/admin');
+                    window.location.href = '/admin';
                 } else {
-                    navigate('/dashboard');
+                    window.location.href = '/dashboard';
                 }
             } else {
-                setError("Login incompleto: No llegó el usuario o el token.");
+                setError("Respuesta incompleta del servidor.");
+                setLoading(false);
             }
 
         } catch (err) {
             console.error(err);
-            setError("Error al iniciar sesión.");
+            setError('Credenciales incorrectas o error de servidor');
+            setLoading(false);
         }
     };
 
     return (
         <div className="auth-container">
             <div className="glass-card">
+                <h1>BufaloBoards</h1>
+                <p style={{textAlign:'center', color: '#888', marginBottom:'20px'}}>Acceso al Sistema</p>
                 
-                <div className="logo-placeholder">
-                    <h1> BufaloBoards</h1>
-                </div>
-
-                <h2 style={{ textAlign: 'center', marginBottom: '25px', fontWeight: '300' }}>
-                    Bienvenido de nuevo
-                </h2>
-
                 <form onSubmit={handleSubmit}>
-                    <div style={{ marginBottom: '20px' }}>
-                        <input 
-                            type="email" 
-                            placeholder="Tu correo electrónico"
-                            className="glass-input"
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            required 
-                        />
-                    </div>
-                    <div style={{ marginBottom: '20px' }}>
-                        <input 
-                            type="password" 
-                            placeholder="Tu contraseña"
-                            className="glass-input"
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            required 
-                        />
-                    </div>
+                    <input 
+                        type="email" 
+                        placeholder="Email" 
+                        className="glass-input"
+                        value={email} 
+                        onChange={e => setEmail(e.target.value)} 
+                        required 
+                    />
+                    <br /> {/* Espacio extra */}
+                    <input 
+                        type="password" 
+                        placeholder="Contraseña" 
+                        className="glass-input"
+                        value={password} 
+                        onChange={e => setPassword(e.target.value)} 
+                        required 
+                    />
                     
-                    {error && <p className="error-msg" style={{textAlign: 'center', marginBottom: '15px'}}>{error}</p>}
-
-                    <button type="submit" className="yummy-button">
-                        Ingresar
+                    {error && <div style={{marginTop: '15px', color: '#ff6b6b', textAlign:'center', fontWeight:'bold'}}>{error}</div>}
+                    
+                    <button type="submit" disabled={loading} className="yummy-button" style={{marginTop:'20px'}}>
+                        {loading ? 'Verificando...' : 'Ingresar'}
                     </button>
                 </form>
                 
-                <Link to="/register" className="auth-link">
-                    ¿No tienes cuenta? Regístrate aquí
-                </Link>
+                <div style={{marginTop: '20px', textAlign: 'center'}}>
+                    <Link to="/register" className="auth-link">Registrarse</Link>
+                </div>
             </div>
         </div>
     );
