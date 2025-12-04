@@ -19,9 +19,14 @@ class TaskController extends Controller
     
     $task->list_id = $request->list_id;
     $task->position = $request->position;
+
+    if ($request->has('assign_user_id')) {
+        $task->user_id = $request->assign_user_id;
+    }
+
     $task->save();
     
-    return response()->json($task);
+    return response()->json($task->load('user'));
 }
 
     public function store(Request $request)

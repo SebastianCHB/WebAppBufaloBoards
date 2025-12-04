@@ -10,4 +10,7 @@ class Task extends Model
 
     public function list() { return $this->belongsTo(Lista::class, 'list_id'); }
     public function user() { return $this->belongsTo(User::class); }
+
+    public function files() { return $this->hasMany(TaskFile::class); }
+    
 }

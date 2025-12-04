@@ -20,4 +20,9 @@ class Board extends Model
     {
         return $this->hasMany(Lista::class)->orderBy('position', 'asc');
     }
+
+    public function members()
+    {
+        return $this->belongsToMany(User::class, 'board_user');
+    }
 }
